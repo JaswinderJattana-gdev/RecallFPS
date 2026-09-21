@@ -42,6 +42,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category ="Input")
 	UInputAction* MoveAction;
 
+	/** Fire Input Action */
+	UPROPERTY(EditAnywhere, Category ="Input")
+	UInputAction* RecallFireAction;
+
+	/** Recall Input Action */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* RecallAction;
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* LookAction;
@@ -60,6 +68,12 @@ protected:
 
 	/** Called from Input Actions for looking input */
 	void LookInput(const FInputActionValue& Value);
+
+	/** Fire Input */
+	void FireInput();
+
+	/** Recall Input */
+	void RecallInput();
 
 	/** Handles aim inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category="Input")

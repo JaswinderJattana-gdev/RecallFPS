@@ -4,6 +4,7 @@
 #include "RecallWeapon.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "RecallProjectile.h"
 
 // Sets default values
 ARecallWeapon::ARecallWeapon()
@@ -15,8 +16,36 @@ ARecallWeapon::ARecallWeapon()
 
     MuzzlePoint = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePoint"));
     MuzzlePoint->SetupAttachment(WeaponMesh);
+
+	RecallPoint = CreateDefaultSubobject<USceneComponent>(TEXT("RecallPoint"));
+	RecallPoint->SetupAttachment(WeaponMesh);
 }
 
+void ARecallWeapon::Fire()
+{
+	if (!ProjectileClass) return;
+
+	FTransform MuzzleTransform = MuzzlePoint->GetComponentTransform();
+
+	ARecallProjectile* Projectile = GetWorld()->SpawnActor<ARecallProjectile>(ProjectileClass, MuzzleTransform);
+	if (Projectile)
+	{
+		ActiveProjectiles.Add(Projectile);
+		UE_LOG(LogTemp,Warning,TEXT("Active Projectiles: %d"),ActiveProjectiles.Num());
+		Projectile->SetOwnerWeapon(this);
+	}
+}
+
+void ARecallWeapon::Recall()
+{
+	for (ARecallProjectile* Projectile : ActiveProjectiles)
+	{
+		if(IsValid(Projectile))
+		{
+			Projectile->StartRecall();
+		}
+	}
+}
 // Called when the game starts or when spawned
 void ARecallWeapon::BeginPlay()
 {
@@ -31,3 +60,7 @@ void ARecallWeapon::Tick(float DeltaTime)
 
 }
 
+FVector ARecallWeapon::GetRecallLocation() const
+{
+	return RecallPoint->GetComponentLocation();
+}

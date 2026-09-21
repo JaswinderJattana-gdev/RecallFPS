@@ -60,6 +60,12 @@ void ARecallFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		// Looking/Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARecallFPSCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ARecallFPSCharacter::LookInput);
+
+		// Firing
+		EnhancedInputComponent->BindAction(RecallFireAction, ETriggerEvent::Started, this, &ARecallFPSCharacter::FireInput);
+
+		// Recall
+		EnhancedInputComponent->BindAction(RecallAction, ETriggerEvent::Started, this, &ARecallFPSCharacter::RecallInput);
 	}
 	else
 	{
@@ -100,6 +106,22 @@ void ARecallFPSCharacter::LookInput(const FInputActionValue& Value)
 	// pass the axis values to the aim input
 	DoAim(LookAxisVector.X, LookAxisVector.Y);
 
+}
+
+void ARecallFPSCharacter::FireInput()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Fire();
+	}
+}
+
+void ARecallFPSCharacter::RecallInput()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Recall();
+	}
 }
 
 void ARecallFPSCharacter::DoAim(float Yaw, float Pitch)

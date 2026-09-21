@@ -2,6 +2,7 @@
 
 
 #include "RecallProjectile.h"
+#include "RecallWeapon.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -10,7 +11,7 @@
 ARecallProjectile::ARecallProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	RootComponent = CollisionComponent;	
@@ -35,10 +36,26 @@ void ARecallProjectile::BeginPlay()
 	
 }
 
+void ARecallProjectile::StartRecall()
+{
+	CurrentState = ERecallProjectileState::Recalling;
+	UE_LOG(LogTemp, Warning, TEXT("Projectile entered recalling state."));
+}
+
+void ARecallProjectile::SetOwnerWeapon(ARecallWeapon* Weapon)
+{
+	OwnerWeapon = Weapon;
+}
+
 // Called every frame
 void ARecallProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
+	if (CurrentState == ERecallProjectileState::Recalling && IsValid(OwnerWeapon))
+	{
+		FVector Direction = (OwnerWeapon->GetRecallLocation() - GetActorLocation()).GetSafeNormal();
 
+		ProjectileMovement->Velocity = Direction * ProjectileMovement->InitialSpeed;
+	}
+}
