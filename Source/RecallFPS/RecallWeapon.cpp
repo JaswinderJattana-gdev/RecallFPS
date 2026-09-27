@@ -27,12 +27,17 @@ void ARecallWeapon::Fire()
 
 	FTransform MuzzleTransform = MuzzlePoint->GetComponentTransform();
 
+	if (CurrentAmmo <= 0) return;
+
 	ARecallProjectile* Projectile = GetWorld()->SpawnActor<ARecallProjectile>(ProjectileClass, MuzzleTransform);
+
 	if (Projectile)
 	{
 		ActiveProjectiles.Add(Projectile);
 		UE_LOG(LogTemp,Warning,TEXT("Active Projectiles: %d"),ActiveProjectiles.Num());
 		Projectile->SetOwnerWeapon(this);
+		CurrentAmmo--;
+		UE_LOG(LogTemp, Warning, TEXT("Ammo: %d / %d"), CurrentAmmo, MaxAmmo);
 	}
 }
 
@@ -50,6 +55,8 @@ void ARecallWeapon::Recall()
 void ARecallWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CurrentAmmo = MaxAmmo;
 	
 }
 
@@ -63,4 +70,15 @@ void ARecallWeapon::Tick(float DeltaTime)
 FVector ARecallWeapon::GetRecallLocation() const
 {
 	return RecallPoint->GetComponentLocation();
+}
+
+void ARecallWeapon::OnProjectileReturned(ARecallProjectile* Projectile)
+{
+	if (ActiveProjectiles.Contains(Projectile))
+	{
+		ActiveProjectiles.Remove(Projectile);
+		UE_LOG(LogTemp, Warning, TEXT("Projectile returned. Active Projectiles: %d"), ActiveProjectiles.Num());
+		CurrentAmmo++;
+		UE_LOG(LogTemp, Warning, TEXT("Ammo restored: %d / %d"), CurrentAmmo, MaxAmmo);
+	}
 }

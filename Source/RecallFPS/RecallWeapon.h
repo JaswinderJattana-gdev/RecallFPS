@@ -36,6 +36,8 @@ public:
 
 	FVector GetRecallLocation() const;
 
+	void OnProjectileReturned(ARecallProjectile* Projectile);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,5 +45,13 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Ammo")
+	int32 MaxAmmo = 6;
+
+	UPROPERTY(VisibleAnywhere, Category = "Ammo")
+	int32 CurrentAmmo = 6;
+
 
 };

@@ -17,6 +17,8 @@ ARecallProjectile::ARecallProjectile()
 	RootComponent = CollisionComponent;	
 	CollisionComponent->InitSphereRadius(5.0f);
 
+	CollisionComponent->OnComponentHit.AddDynamic(this, &ARecallProjectile::OnProjectileHit);
+
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));	
 	ProjectileMesh->SetupAttachment(RootComponent);	
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -39,6 +41,8 @@ void ARecallProjectile::BeginPlay()
 void ARecallProjectile::StartRecall()
 {
 	CurrentState = ERecallProjectileState::Recalling;
+
+	ProjectileMovement->Activate();
 	UE_LOG(LogTemp, Warning, TEXT("Projectile entered recalling state."));
 }
 
@@ -57,5 +61,26 @@ void ARecallProjectile::Tick(float DeltaTime)
 		FVector Direction = (OwnerWeapon->GetRecallLocation() - GetActorLocation()).GetSafeNormal();
 
 		ProjectileMovement->Velocity = Direction * ProjectileMovement->InitialSpeed;
+
+		float DistanceToWeapon = FVector::Dist(GetActorLocation(), OwnerWeapon->GetRecallLocation());
+		if (DistanceToWeapon < 50.0f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Projectile reached the weapon."));
+			OwnerWeapon->OnProjectileReturned(this);
+			Destroy();
+		}
+	}
+}
+
+void ARecallProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent,AActor* OtherActor,UPrimitiveComponent* OtherComponent,FVector NormalImpulse,const FHitResult& Hit)
+{
+	if (CurrentState == ERecallProjectileState::Travelling)
+	{
+		CurrentState = ERecallProjectileState::Embedded;
+
+		ProjectileMovement->StopMovementImmediately();
+		ProjectileMovement->Deactivate();
+
+		UE_LOG(LogTemp, Warning, TEXT("Projectile embedded."));
 	}
 }

@@ -9,6 +9,7 @@
 class USphereComponent;
 class UStaticMeshComponent;
 class UProjectileMovementComponent;
+class UPrimitiveComponent;
 
 UENUM()
 enum class ERecallProjectileState : uint8
@@ -54,4 +55,6 @@ private:
 	UPROPERTY()
 	ARecallWeapon* OwnerWeapon;
 
+	UFUNCTION()
+	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 };
