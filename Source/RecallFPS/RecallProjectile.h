@@ -34,6 +34,12 @@ class RECALLFPS_API ARecallProjectile : public AActor
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile", meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float OutgoingDamage = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float RecallDamage = 30.0f;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -55,6 +61,12 @@ private:
 	UPROPERTY()
 	ARecallWeapon* OwnerWeapon;
 
+	UPROPERTY()
+	TArray<AActor*> HitActors;
+
 	UFUNCTION()
 	void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComponent,int32 OtherBodyIndex,bool bFromSweep,const FHitResult& SweepResult);
 };
