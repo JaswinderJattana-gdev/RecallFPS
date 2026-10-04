@@ -40,6 +40,12 @@ class RECALLFPS_API ARecallProjectile : public AActor
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float RecallDamage = 30.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Recall|Path")
+	float RecallCurveStrength = 500.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Recall|Path")
+	float RecallDuration = 1.0f;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -69,4 +75,12 @@ private:
 
 	UFUNCTION()
 	void OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComponent,int32 OtherBodyIndex,bool bFromSweep,const FHitResult& SweepResult);
+
+	FVector RecallStartPoint;
+	FVector RecallControlPoint1;
+	FVector RecallControlPoint2;
+
+	float RecallProgress = 0.0f;
+
+	bool IsRecallPathClear(const FVector& EndPoint) const;
 };
